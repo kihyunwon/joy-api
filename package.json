@@ -1,0 +1,16 @@
+{
+  "name": "joy-api",
+  "version": "0.0.1",
+  "description": "serverless api for joy app",
+  "keywords": [
+    "api",
+    "severless",
+    "node.js"
+  ],
+  "dependencies": {
+    "aws-sdk": "^2.297.0",
+    "serverless-dynamodb-local": "^0.2.31",
+    "serverless-offline": "^3.25.8",
+    "uuid": "^3.3.2"
+  }
+}
