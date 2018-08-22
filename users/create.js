@@ -1,5 +1,6 @@
 'use strict';
 
+const bcrpyt = require('bcrpyt');
 const uuid = require('uuid');
 const dynamodb = require('./db');
 
@@ -16,34 +17,43 @@ module.exports.create = async (event, context) => {
     };
   }
 
-  const { email, first_name, last_name } = _parsed;
+  const { email, first_name, last_name, password } = _parsed;
 
   if (typeof email !== 'string' || typeof first_name !== 'string'
-      || typeof last_name !== 'string') {
+      || typeof last_name !== 'string' || typeof password !== 'string') {
     console.error('Validation Failed');
     return {
       statusCode: 400,
       headers: { 'Content-Type': 'text/plain' },
-      body: 'Couldn\'t update the User.',
+      body: 'Couldn\'t create new User.',
     };
   }
 
+  const hash = bcrypt.hash(myPlaintextPassword, process.env.SALT);
   const timestamp = new Date().getTime();
 
+  // TODO: create profile & auth
   const params = {
-    TableName: process.env.USER_TABLE,
-    Item: {
-      id: uuid.v1(),
-      email: email,
-      first_name,
-      last_name,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-    },
+    RequestItems: {
+      [process.env.USER_TABLE]: [
+        {
+          PutRequest: {
+            Item: {
+              id: uuid.v1(),
+              email: email,
+              first_name: first_name,
+              last_name: last_name,
+              createdAt: timestamp,
+              updatedAt: timestamp,
+            }
+          }
+        }
+      ],
+    }
   };
 
   try {
-    const data = await dynamoDb.put(params).promise();
+    const data = await dynamoDb.batchWriteItem(params).promise();
     console.log(`Create new User data=${JSON.stringify(data)}`);
     return { statusCode: 200, body: JSON.stringify(params.Item) };
   } catch (error) {

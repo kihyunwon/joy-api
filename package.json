@@ -9,6 +9,7 @@
   ],
   "dependencies": {
     "aws-sdk": "^2.297.0",
+    "bcrpyt": "^2.0.0",
     "serverless-dynamodb-local": "^0.2.31",
     "serverless-offline": "^3.25.8",
     "uuid": "^3.3.2"
