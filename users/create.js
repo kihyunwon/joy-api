@@ -29,7 +29,7 @@ module.exports.create = async (event, context) => {
     };
   }
 
-  const hash = bcrypt.hash(myPlaintextPassword, process.env.SALT);
+  const hash = bcrypt.hash(password, process.env.SALT);
   const timestamp = new Date().getTime();
 
   // TODO: create profile & auth
