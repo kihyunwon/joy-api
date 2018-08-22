@@ -17,9 +17,22 @@ module.exports.update = async (event, context) => {
     };
   }
 
-  const data = JSON.parse(event.body);
-  if (typeof data.email !== 'string' || typeof data.first_name !== 'boolean'
-      || typeof data.last_name !== 'string') {
+  let _parsed;
+
+  try {
+    _parsed = JSON.parse(event.body);
+  } catch (err) {
+    console.error(`Could not parse requested JSON ${event.body}: ${err.stack}`);
+    return {
+      statusCode: 500,
+      error: `Could not parse requested JSON: ${err.stack}`
+    };
+  }
+
+  const { email, first_name, last_name } = _parsed;
+
+  if (typeof email !== 'string' || typeof first_name !== 'string'
+      || typeof last_name !== 'string') {
     console.error('Validation Failed');
     return {
       statusCode: 400,
@@ -29,15 +42,16 @@ module.exports.update = async (event, context) => {
   }
 
   const timestamp = new Date().getTime();
+
   const params = {
     TableName: process.env.USER_TABLE,
     Key: {
       id: event.pathParameters.id,
     },
     ExpressionAttributeValues: {
-      ':email': data.email,
-      ':first_name': data.first_name,
-      ':last_name': data.last_name,
+      ':email': email,
+      ':first_name': first_name,
+      ':last_name': last_name,
       ':updatedAt': timestamp,
     },
     UpdateExpression: 'SET email = :email, first_name = :first_name, last_name = :last_name, updatedAt = :updatedAt',

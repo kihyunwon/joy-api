@@ -17,6 +17,17 @@ module.exports.create = async (event, context) => {
   }
 
   const { email, first_name, last_name } = _parsed;
+
+  if (typeof email !== 'string' || typeof first_name !== 'string'
+      || typeof last_name !== 'string') {
+    console.error('Validation Failed');
+    return {
+      statusCode: 400,
+      headers: { 'Content-Type': 'text/plain' },
+      body: 'Couldn\'t update the User.',
+    };
+  }
+
   const timestamp = new Date().getTime();
 
   const params = {
